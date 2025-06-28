@@ -1,0 +1,45 @@
+﻿@inject MoviesClients Clients
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer 
+
+
+<div class="modal fade" id="@GetMovieId(Movie)" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">@title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+           
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">cancel</button>
+                <button type="button" class="btn btn-primary" @onclick="@DeleteAsync">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public Movie? Movie { get; set; }
+
+    private string title = string.Empty;
+
+    protected override void OnParametersSet()
+    {
+        title = $"Delete Movie:{Movie?.Name}";
+    }
+
+    public static string GetMovieId(Movie? movie)
+    {
+        return $"deleteMovie-{movie?.Id}"; 
+    }
+
+    private async Task DeleteAsync()
+    {
+        if (Movie is not null)
+        {
+            await Clients.DeleteMovieAsync(Movie.Id);
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}
